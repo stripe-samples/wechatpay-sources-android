@@ -8,6 +8,11 @@ This app demonstrates
 See [WeChat Pay Payments with Sources](https://stripe.com/docs/sources/wechat-pay) for more details.
 
 ## Setup
+
+### Requirements
+Your app must be registered [WeChat Open Platform](https://open.weixin.qq.com/).
+
+### Run
 1. Clone the `wechatpay-sources-android` repository.
 2. Open the project in Android Studio.
 3. Run the `app` project.
