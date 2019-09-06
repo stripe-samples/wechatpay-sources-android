@@ -1,3 +1,5 @@
+.DS_Store
+
 # Built application files
 *.apk
 *.ap_
@@ -12,6 +14,7 @@
 bin/
 gen/
 out/
+javadoc/
 
 # Gradle files
 .gradle/
@@ -32,15 +35,9 @@ proguard/
 # Android Studio captures folder
 captures/
 
-# IntelliJ
+# Android Studio / IntelliJ
+.idea/
 *.iml
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/assetWizardSettings.xml
-.idea/dictionaries
-.idea/libraries
-.idea/caches
 
 # Keystore files
 # Uncomment the following line if you do not want to check your keystore files in.
@@ -49,13 +46,22 @@ captures/
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild
 
+*.iws
+out/
+
 # Google Services (e.g. APIs or Firebase)
 google-services.json
 
-# Freeline
-freeline.py
-freeline/
-freeline_project_description.json
+# ADT / Eclipse
+.settings/
+.metadata/
+tmp/
+
+# Output
+app/target
+app/gen
+app/bin
+app/*.log
 
 # fastlane
 fastlane/report.xml
