@@ -6,3 +6,8 @@ This app demonstrates
 2. Integrate with the WeChat SDK to capture payment and complete the transaction
 
 See [WeChat Pay Payments with Sources](https://stripe.com/docs/sources/wechat-pay) for more details.
+
+## Setup
+1. Clone the `wechatpay-sources-android` repository.
+2. Open the project in Android Studio.
+3. Run the `app` project.
