@@ -10,7 +10,8 @@ See [WeChat Pay Payments with Sources](https://stripe.com/docs/sources/wechat-pa
 ## Setup
 
 ### Requirements
-Your app must be registered [WeChat Open Platform](https://open.weixin.qq.com/).
+- Your app must be registered [WeChat Open Platform](https://open.weixin.qq.com/).
+- You must have a WeChat account with WeChat Pay enabled.
 
 ### Configure
 Update [Constants.kt](https://github.com/stripe-samples/wechatpay-sources-android/blob/master/app/src/main/java/com/stripe/android/stripewechatapp/Constants.kt) with the required information.
