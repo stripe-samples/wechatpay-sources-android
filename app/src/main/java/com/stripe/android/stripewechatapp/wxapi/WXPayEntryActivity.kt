@@ -1,4 +1,4 @@
-package com.stripe.android.stripewechatapp.release.wxapi
+package com.stripe.android.stripewechatapp.wxapi
 
 import com.stripe.android.stripewechatapp.BaseWXPayEntryActivity
 
