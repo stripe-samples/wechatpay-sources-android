@@ -20,3 +20,6 @@ Update [Constants.kt](https://github.com/stripe-samples/wechatpay-sources-androi
 1. Clone the `wechatpay-sources-android` repository.
 2. Open the project in Android Studio.
 3. Run the `app` project.
+
+## Demo
+<img width="320" height="640" src="https://raw.githubusercontent.com/stripe-samples/wechatpay-sources-android/master/assets/demo.gif" />
