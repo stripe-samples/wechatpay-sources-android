@@ -15,6 +15,16 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
+        <meta-data
+            android:name="com.stripe.android.stripewechatapp.metadata.app_id"
+            android:value="${APP_ID}" />
+        <meta-data
+            android:name="com.stripe.android.stripewechatapp.metadata.app_signature"
+            android:value="${APP_SIGNATURE}" />
+        <meta-data
+            android:name="com.stripe.android.stripewechatapp.metadata.publishable_key"
+            android:value="${PUBLISHABLE_KEY}" />
+
         <activity android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
