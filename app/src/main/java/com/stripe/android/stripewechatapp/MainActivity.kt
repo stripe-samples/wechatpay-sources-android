@@ -1,8 +1,9 @@
 package com.stripe.android.stripewechatapp
 
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import com.stripe.android.ApiResultCallback
 import com.stripe.android.Stripe
 import com.stripe.android.model.Source
@@ -15,55 +16,73 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var weChatApi : IWXAPI
+
+    private val settings: Settings by lazy {
+        Settings(this)
+    }
+    private val stripe: Stripe by lazy {
+        Stripe(this, settings.publishableKey)
+    }
+    private val weChatApi : IWXAPI by lazy {
+        WXAPIFactory.createWXAPI(this, settings.appId, true)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
-
-        val stripe = Stripe(this, Constants.STRIPE_KEY)
         val weChatPaySourceParams = SourceParams.createWeChatPayParams(
             AMOUNT,
             CURRENCY,
-            Constants.APP_ID,
+            settings.appId,
             STATEMENT_DESCRIPTOR
         )
         button.setOnClickListener {
-            Toast.makeText(this, R.string.creating_source_object, Toast.LENGTH_SHORT)
-                .show()
-
-            stripe.createSource(weChatPaySourceParams,
-                object : ApiResultCallback<Source> {
+            button.isEnabled = false
+            stripe.createSource(
+                weChatPaySourceParams,
+                callback = object : ApiResultCallback<Source> {
                     override fun onError(e: Exception) {
+                        button.isEnabled = true
+                        showSnackbar(e.message.orEmpty())
                     }
 
-                    override fun onSuccess(source: Source) {
-                        launchWeChat(source.weChat)
+                    override fun onSuccess(result: Source) {
+                        button.isEnabled = true
+                        showSnackbar(getString(R.string.created_source, result.id.orEmpty()))
+                        launchWeChat(result.weChat)
                     }
-                })
+                }
+            )
         }
     }
 
     private fun launchWeChat(weChat: WeChat) {
-        val success = weChatApi.registerApp(Constants.APP_SIGNATURE)
-        assert(success)
-        weChatApi.sendReq(createPayReq(weChat))
+        val success = weChatApi.registerApp(settings.appSignature)
+        if (success) {
+            showSnackbar("Starting WeChat Pay")
+            weChatApi.sendReq(createPayReq(weChat))
+        } else {
+            showSnackbar("Failed to start WeChat Pay")
+        }
     }
 
     private fun createPayReq(weChat: WeChat): PayReq {
-        val weChatReq = PayReq()
-        weChatReq.appId = weChat.appId
-        weChatReq.partnerId = weChat.partnerId
-        weChatReq.prepayId = weChat.prepayId
-        weChatReq.packageValue = weChat.packageValue
-        weChatReq.nonceStr = weChat.nonce
-        weChatReq.timeStamp = weChat.timestamp
-        weChatReq.sign = weChat.sign
+        return PayReq().apply {
+            appId = weChat.appId
+            partnerId = weChat.partnerId
+            prepayId = weChat.prepayId
+            packageValue = weChat.packageValue
+            nonceStr = weChat.nonce
+            timeStamp = weChat.timestamp
+            sign = weChat.sign
+        }
+    }
 
-        return weChatReq
+    private fun showSnackbar(message: String) {
+        Snackbar.make(findViewById<View>(android.R.id.content), message, Snackbar.LENGTH_SHORT)
+            .show()
     }
 
     companion object {

@@ -11,11 +11,16 @@ import com.tencent.mm.opensdk.openapi.IWXAPIEventHandler
 import com.tencent.mm.opensdk.openapi.WXAPIFactory
 
 abstract class BaseWXPayEntryActivity : AppCompatActivity(), IWXAPIEventHandler {
-    private lateinit var weChatApi : IWXAPI
+    private val settings: Settings by lazy {
+        Settings(this)
+    }
+
+    private val weChatApi : IWXAPI by lazy {
+        WXAPIFactory.createWXAPI(this, settings.appId, true)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        weChatApi = WXAPIFactory.createWXAPI(this, Constants.APP_ID, true)
         weChatApi.handleIntent(intent, this)
     }
 

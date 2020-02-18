@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Stripe  WeChat Pay Integration</string>
     <string name="launch_wechat_pay">Pay with WeChat</string>
-    <string name="creating_source_object">"Creating Stripe Source object…"</string>
+    <string name="created_source">Created Stripe Source object %1$s</string>
 </resources>
