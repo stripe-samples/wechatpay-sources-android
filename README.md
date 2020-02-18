@@ -14,7 +14,13 @@ See [WeChat Pay Payments with Sources](https://stripe.com/docs/sources/wechat-pa
 - You must have a WeChat account with WeChat Pay enabled.
 
 ### Configure
-Update [Constants.kt](https://github.com/stripe-samples/wechatpay-sources-android/blob/master/app/src/main/java/com/stripe/android/stripewechatapp/Constants.kt) with the required information.
+1. Create `~/.gradle/gradle.properties` if it doesn't exist
+2. Add the following entries to the end of the file and set to the appropriate values
+   ```
+   STRIPE_WECHAT_EXAMPLE_APP_ID=wx123
+   STRIPE_WECHAT_EXAMPLE_APP_SIGNATURE=123456789
+   STRIPE_WECHAT_EXAMPLE_STRIPE_KEY=pk_live_mykey
+   ```
 
 ### Run
 1. Clone the `wechatpay-sources-android` repository.
