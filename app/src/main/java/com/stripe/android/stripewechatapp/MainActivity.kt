@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         button2.setOnClickListener {
             lifecycleScope.launch {
                 kotlin.runCatching {
+                    // change this value to "client_secret" returned from creating PI response
                     stripe.confirmWeChatPayPayment(ConfirmPaymentIntentParams.create("pi_1IncTBBNJ02ErVOjEvHKT4Sp_secret_PRHRqIZapDu5O3OdIv9FJud4r"))
                 }.fold(
                     onSuccess = {
