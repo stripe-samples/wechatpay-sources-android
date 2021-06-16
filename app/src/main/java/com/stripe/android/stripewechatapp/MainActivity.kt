@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         Stripe(this, settings.publishableKey)
     }
     private val weChatApi : IWXAPI by lazy {
-        WXAPIFactory.createWXAPI(this, settings.appId, true)
+        WXAPIFactory.createWXAPI(this, null)
     }
     private val viewBinding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun launchWeChat(weChat: WeChat) {
-        val success = weChatApi.registerApp(settings.appSignature)
+        val success = weChatApi.registerApp(weChat.appId)
         if (success) {
             showSnackbar("Starting WeChat Pay")
             weChatApi.sendReq(createPayReq(weChat))

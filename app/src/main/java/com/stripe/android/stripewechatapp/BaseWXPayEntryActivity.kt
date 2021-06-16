@@ -16,7 +16,7 @@ abstract class BaseWXPayEntryActivity : AppCompatActivity(), IWXAPIEventHandler 
     }
 
     private val weChatApi : IWXAPI by lazy {
-        WXAPIFactory.createWXAPI(this, settings.appId, true)
+        WXAPIFactory.createWXAPI(this, null)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
