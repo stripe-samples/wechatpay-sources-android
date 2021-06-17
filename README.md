@@ -18,7 +18,6 @@ See [WeChat Pay Payments with Sources](https://stripe.com/docs/sources/wechat-pa
 2. Add the following entries to the end of the file and set to the appropriate values
    ```
    STRIPE_WECHAT_EXAMPLE_APP_ID=wx123
-   STRIPE_WECHAT_EXAMPLE_APP_SIGNATURE=123456789
    STRIPE_WECHAT_EXAMPLE_STRIPE_KEY=pk_live_mykey
    ```
 

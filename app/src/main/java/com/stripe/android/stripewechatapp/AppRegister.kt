@@ -8,7 +8,7 @@ import com.tencent.mm.opensdk.openapi.WXAPIFactory
 class AppRegister : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val settings = Settings(context)
-        val api = WXAPIFactory.createWXAPI(context, settings.appId, true)
-        api.registerApp(settings.appSignature)
+        val api = WXAPIFactory.createWXAPI(context, null)
+        api.registerApp(settings.appId)
     }
 }

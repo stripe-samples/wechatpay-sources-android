@@ -7,7 +7,6 @@ internal class Settings(context: Context) {
     private val appContext = context.applicationContext
 
     val appId = getMetadata(METADATA_KEY_APP_ID)
-    val appSignature = getMetadata(METADATA_KEY_APP_SIGNATURE)
     val publishableKey = getMetadata(METADATA_KEY_PUBLISHABLE_KEY)
 
     private fun getMetadata(key: String): String {
@@ -22,8 +21,6 @@ internal class Settings(context: Context) {
     private companion object {
         private const val METADATA_KEY_APP_ID =
             "com.stripe.android.stripewechatapp.metadata.app_id"
-        private const val METADATA_KEY_APP_SIGNATURE =
-            "com.stripe.android.stripewechatapp.metadata.app_signature"
         private const val METADATA_KEY_PUBLISHABLE_KEY =
             "com.stripe.android.stripewechatapp.metadata.publishable_key"
     }

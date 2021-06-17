@@ -5,6 +5,12 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- WeChat Pay SDK will try to open the WeChat app installed on the device, the queries tag
+         is necessary to make WeChat app package visible for the app post Android 11 -->
+    <queries>
+        <package android:name="com.tencent.mm" />
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -18,9 +24,6 @@
         <meta-data
             android:name="com.stripe.android.stripewechatapp.metadata.app_id"
             android:value="${APP_ID}" />
-        <meta-data
-            android:name="com.stripe.android.stripewechatapp.metadata.app_signature"
-            android:value="${APP_SIGNATURE}" />
         <meta-data
             android:name="com.stripe.android.stripewechatapp.metadata.publishable_key"
             android:value="${PUBLISHABLE_KEY}" />
