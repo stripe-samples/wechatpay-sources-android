@@ -42,4 +42,4 @@ See [Accept a WeChat Pay payment](https://stripe.com/docs/payments/wechat-pay/ac
 3. Run the `app` project.
 
 ## Demo
-<img width="320" height="640" src="https://raw.githubusercontent.com/stripe-samples/wechatpay-sources-android/master/assets/demo.gif" />
+<img width="320" height="640" src="https://user-images.githubusercontent.com/79880926/127387035-762bc3e9-b570-4a2a-bbf7-413ae24ed501.gif" />
