@@ -2,4 +2,6 @@
     <string name="app_name">Stripe  WeChat Pay Integration</string>
     <string name="launch_wechat_pay">Pay with WeChat</string>
     <string name="created_source">Created Stripe Source object %1$s</string>
+    <string name="creating_payment_intent">Creating PaymentIntent&#8230;</string>
+    <string name="payment_intent_status">PaymentIntent status: %s</string>
 </resources>
