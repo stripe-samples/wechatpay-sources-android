@@ -3,13 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.stripe.android.stripewechatapp">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-
-    <!-- WeChat Pay SDK will try to open the WeChat app installed on the device, the queries tag
-         is necessary to make WeChat app package visible for the app post Android 11 -->
-    <queries>
-        <package android:name="com.tencent.mm" />
-    </queries>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".App"
@@ -27,8 +21,12 @@
         <meta-data
             android:name="com.stripe.android.stripewechatapp.metadata.publishable_key"
             android:value="${PUBLISHABLE_KEY}" />
+        <meta-data
+            android:name="com.stripe.android.stripewechatapp.metadata.backend_url"
+            android:value="${BACKEND_URL}" />
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,19 +34,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name="${applicationId}.wxapi.WXPayEntryActivity"
-            android:exported="true"
-            android:launchMode="singleTop">
-        </activity>
-
-        <receiver
-            android:name=".AppRegister"
-            android:permission="com.tencent.mm.plugin.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.tencent.mm.plugin.openapi.Intent.ACTION_REFRESH_WXAPP" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

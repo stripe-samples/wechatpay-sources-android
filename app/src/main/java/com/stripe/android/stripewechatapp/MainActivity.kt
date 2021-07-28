@@ -1,30 +1,37 @@
 package com.stripe.android.stripewechatapp
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.stripe.android.Stripe
-import com.stripe.android.createSource
-import com.stripe.android.model.SourceParams
-import com.stripe.android.model.WeChat
+import com.stripe.android.StripeApiBeta
+import com.stripe.android.createPaymentMethod
+import com.stripe.android.getPaymentIntentResult
+import com.stripe.android.model.ConfirmPaymentIntentParams
+import com.stripe.android.model.PaymentMethodCreateParams
+import com.stripe.android.model.PaymentMethodOptionsParams
 import com.stripe.android.stripewechatapp.databinding.ActivityMainBinding
-import com.tencent.mm.opensdk.modelpay.PayReq
-import com.tencent.mm.opensdk.openapi.IWXAPI
-import com.tencent.mm.opensdk.openapi.WXAPIFactory
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
+    private val viewModel: WeChatViewModel by viewModels()
     private val settings: Settings by lazy {
         Settings(this)
     }
     private val stripe: Stripe by lazy {
-        Stripe(this, settings.publishableKey)
+        Stripe(
+            this,
+            settings.publishableKey,
+            betas = setOf(StripeApiBeta.WeChatPayV1)
+        )
     }
-    private val weChatApi : IWXAPI by lazy {
-        WXAPIFactory.createWXAPI(this, null)
-    }
+
     private val viewBinding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -35,68 +42,62 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(viewBinding.toolbar)
 
         viewBinding.button.setOnClickListener {
-            viewBinding.button.isEnabled = false
-            onCreateSource()
+            viewBinding.status.text = ""
+            createAndConfirmWeChatPaymentIntent()
+        }
+
+        viewModel.status.observe(this, Observer(viewBinding.status::setText))
+        viewModel.inProgress.observe(this) { isInProgress ->
+            viewBinding.button.isEnabled = !isInProgress
+            viewBinding.progress.visibility = if (isInProgress) View.VISIBLE else View.INVISIBLE
         }
     }
 
-    private fun onCreateSource() {
-        val weChatPaySourceParams = SourceParams.createWeChatPayParams(
-            AMOUNT,
-            CURRENCY,
-            settings.appId,
-            STATEMENT_DESCRIPTOR
+
+    private fun createAndConfirmWeChatPaymentIntent() {
+        viewModel.createWeChatPaymentIntent().observe(
+            this,
+            { result ->
+                result.onSuccess { responseData ->
+                    val secret = responseData.getString("secret")
+                    viewModel.appendStatus("Creating WeChat PaymentMethod...")
+                    lifecycleScope.launch {
+                        stripe.createPaymentMethod(PaymentMethodCreateParams.createWeChatPay()).id?.let { paymentMethodId ->
+                            viewModel.appendStatus("WeChat PaymentMethod created, confirming PaymentIntent by opening WeChat app...")
+                            val confirmPaymentIntentParams =
+                                ConfirmPaymentIntentParams.createWithPaymentMethodId(
+                                    paymentMethodId = paymentMethodId,
+                                    clientSecret = secret,
+                                    paymentMethodOptions = PaymentMethodOptionsParams.WeChatPay(
+                                        settings.appId
+                                    )
+                                )
+                            stripe.confirmPayment(this@MainActivity, confirmPaymentIntentParams)
+                        }
+                    }
+                }
+            }
         )
 
-        lifecycleScope.launch {
-            runCatching {
-                stripe.createSource(weChatPaySourceParams)
-            }.fold(
-                onSuccess = { source ->
-                    showSnackbar(
-                        getString(R.string.created_source, source.id.orEmpty())
-                    )
-                    launchWeChat(source.weChat)
-                },
-                onFailure = {
-                    showSnackbar(it.message.orEmpty())
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (stripe.isPaymentResult(requestCode, data)) {
+            lifecycleScope.launch {
+                // stripe.isPaymentResult already verifies data is not null
+                val intentResult = stripe.getPaymentIntentResult(requestCode, data!!)
+                viewModel.appendStatus("WeChat PaymentIntent confirmation finishes with outcome: ${intentResult.outcome}")
+                intentResult.failureMessage?.let {
+                    viewModel.appendStatus("failureMessage: $it")
                 }
-            )
-
-            viewBinding.button.isEnabled = true
-        }
-    }
-
-    private fun launchWeChat(weChat: WeChat) {
-        val success = weChatApi.registerApp(weChat.appId)
-        if (success) {
-            showSnackbar("Starting WeChat Pay")
-            weChatApi.sendReq(createPayReq(weChat))
-        } else {
-            showSnackbar("Failed to start WeChat Pay")
-        }
-    }
-
-    private fun createPayReq(weChat: WeChat): PayReq {
-        return PayReq().apply {
-            appId = weChat.appId
-            partnerId = weChat.partnerId
-            prepayId = weChat.prepayId
-            packageValue = weChat.packageValue
-            nonceStr = weChat.nonce
-            timeStamp = weChat.timestamp
-            sign = weChat.sign
+                viewModel.inProgress.postValue(false)
+            }
         }
     }
 
     private fun showSnackbar(message: String) {
         Snackbar.make(viewBinding.root, message, Snackbar.LENGTH_SHORT)
             .show()
-    }
-
-    companion object {
-        private const val AMOUNT = 1000L
-        private const val CURRENCY = "usd"
-        private const val STATEMENT_DESCRIPTOR = "WIDGET STORE"
     }
 }
