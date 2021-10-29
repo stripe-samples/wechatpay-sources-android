@@ -30,7 +30,7 @@ private def readProperty(name) {
 
 ext {
     retrofitVersion = '2.9.0'
-    stripeVersion = '17.1.0'
+    stripeVersion = '18.2.0'
     lifecycle_version = '2.3.1'
 }
 
@@ -90,8 +90,11 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
 
 
+    // main stripe SDK target
     implementation "com.stripe:stripe-android:$stripeVersion"
+    // optional wechat pay stripe targets
     implementation "com.stripe:stripe-wechatpay:$stripeVersion"
+    // actual wechat pay dependency
     implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:6.7.0'
 
     testImplementation 'junit:junit:4.13.2'

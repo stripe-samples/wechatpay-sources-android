@@ -1,20 +1,19 @@
 package com.stripe.android.stripewechatapp
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.snackbar.Snackbar
 import com.stripe.android.Stripe
 import com.stripe.android.StripeApiBeta
 import com.stripe.android.createPaymentMethod
-import com.stripe.android.getPaymentIntentResult
 import com.stripe.android.model.ConfirmPaymentIntentParams
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.model.PaymentMethodOptionsParams
+import com.stripe.android.payments.paymentlauncher.PaymentLauncher
+import com.stripe.android.payments.paymentlauncher.PaymentResult
 import com.stripe.android.stripewechatapp.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
@@ -32,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
+    private lateinit var paymentLauncher: PaymentLauncher
+
     private val viewBinding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -40,6 +41,17 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
         setSupportActionBar(viewBinding.toolbar)
+
+        paymentLauncher = PaymentLauncher.create(
+            this,
+            settings.publishableKey
+        ) { paymentResult ->
+            viewModel.appendStatus("WeChat PaymentIntent confirmation finishes with $paymentResult")
+            if (paymentResult is PaymentResult.Failed) {
+                viewModel.appendStatus("  Exception: ${paymentResult.throwable}")
+            }
+            viewModel.inProgress.postValue(false)
+        }
 
         viewBinding.button.setOnClickListener {
             viewBinding.status.text = ""
@@ -72,32 +84,12 @@ class MainActivity : AppCompatActivity() {
                                         settings.appId
                                     )
                                 )
-                            stripe.confirmPayment(this@MainActivity, confirmPaymentIntentParams)
+                            paymentLauncher.confirm(confirmPaymentIntentParams)
                         }
                     }
                 }
             }
         )
 
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (stripe.isPaymentResult(requestCode, data)) {
-            lifecycleScope.launch {
-                // stripe.isPaymentResult already verifies data is not null
-                val intentResult = stripe.getPaymentIntentResult(requestCode, data!!)
-                viewModel.appendStatus("WeChat PaymentIntent confirmation finishes with outcome: ${intentResult.outcome}")
-                intentResult.failureMessage?.let {
-                    viewModel.appendStatus("failureMessage: $it")
-                }
-                viewModel.inProgress.postValue(false)
-            }
-        }
-    }
-
-    private fun showSnackbar(message: String) {
-        Snackbar.make(viewBinding.root, message, Snackbar.LENGTH_SHORT)
-            .show()
     }
 }
